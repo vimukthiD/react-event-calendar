@@ -163,10 +163,11 @@ class CalendarDemo extends React.Component {
                                 onEventMouseOut={this.handleEventMouseOut}
                                 onDayClick={this.handleDayClick}
                                 maxEventSlots={10}
+                                showCurrentMonthOnly={true}
                             />
                         </Col>
                     </Row>
-                </Grid> 
+                </Grid>
 
             </div>
         );

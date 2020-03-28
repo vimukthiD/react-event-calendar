@@ -16,8 +16,8 @@ class EventCalendar extends React.Component {
         this.state = {
             today: this.getToday(),
         };
-        
-        this.calendar = new Calendar({siblingMonths: true, });
+
+        this.calendar = new Calendar({siblingMonths: !this.props.showCurrentMonthOnly, });
 
         // Bind methods
         this.getCalendarDays = this.getCalendarDays.bind(this);
@@ -37,8 +37,10 @@ class EventCalendar extends React.Component {
     }
 
     getCalendarDays() {
-        return this.calendar.getCalendar(this.props.year, this.props.month).map((day) => {
-            day.eventSlots = Array(this.props.maxEventSlots).fill(false); 
+        return this.calendar.getCalendar(this.props.year, this.props.month)
+          .filter(value => this.calendar.siblingMonths || value)
+          .map((day) => {
+            day.eventSlots = Array(this.props.maxEventSlots).fill(false);
             return day;
         });
     }
@@ -108,12 +110,12 @@ class EventCalendar extends React.Component {
                          // Flag first day of event
                         eventData.isFirstDay = true;
                     }
-                    
+
                     if (dayIndex === eventLength - 1) {
                         // Flag last day of event
                         eventData.isLastDay = true;
                     }
-                    
+
                     if (!eventData.isFirstDay || !eventData.isLastDay) {
                         // Flag between day of event
                         eventData.isBetweenDay = true;
@@ -159,22 +161,22 @@ class EventCalendar extends React.Component {
     renderDaysOfTheWeek() {
         return this.props.daysOfTheWeek.map((title, index) => {
             return (
-                <CalendarTitle 
+                <CalendarTitle
                     key={'title_'+ index}
-                    title={title} 
+                    title={title}
                 />
-            )   
+            )
         });
     }
 
     renderEvents(day) {
-        
+
         // Trim excess slots
         const eventSlots = day.eventSlots.slice(0, this.getLastIndexOfEvent(day.eventSlots) + 1)
 
         return eventSlots.map((eventData, index) => {
             return (
-                <CalendarEvent 
+                <CalendarEvent
                     key={'event_'+index+this.getSerializedDay(day)}
                     day={day}
                     eventData={eventData}
@@ -191,13 +193,13 @@ class EventCalendar extends React.Component {
         return this.getDaysWithEvents().map((day, index) => {
             const isToday = Calendar.interval(day, this.state.today) === 1;
             const events = this.renderEvents(day);
-            
+
             return (
-                <CalendarDay 
+                <CalendarDay
                     key={'day_'+this.getSerializedDay(day)}
-                    day={day} 
+                    day={day}
                     events={events}
-                    isToday={isToday} 
+                    isToday={isToday}
                     onClick={this.props.onDayClick}
                     />
                 );
@@ -225,6 +227,7 @@ EventCalendar.propTypes = {
     onDayClick: React.PropTypes.func,
     wrapTitle: React.PropTypes.bool,
     year: React.PropTypes.number.isRequired,
+    showCurrentMonthOnly: React.PropTypes.bool
 
 };
 
@@ -241,6 +244,7 @@ EventCalendar.defaultProps = {
     events: [],
     wrapTitle: true,
     maxEventSlots: 10,
+    showCurrentMonthOnly: false,
 };
 
 export default EventCalendar;
