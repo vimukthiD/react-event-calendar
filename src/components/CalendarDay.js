@@ -13,7 +13,7 @@ export default class CalendarDay extends React.Component {
           });
           return (
             <div
-              className={dayClasses}>
+              className={dayClasses} style={{minHeight: this.props.emptyRowHeight}}>
               <div className="inner-grid">
                 <div className="date">
                 </div>
@@ -49,6 +49,7 @@ CalendarDay.propTypes = {
     isToday: React.PropTypes.bool,
     events: React.PropTypes.array,
     onClick: React.PropTypes.func,
+    emptyRowHeight: React.PropTypes.num,
 };
 
 CalendarDay.defaultProps = {

@@ -164,6 +164,9 @@ class CalendarDemo extends React.Component {
                                 onDayClick={this.handleDayClick}
                                 maxEventSlots={10}
                                 showCurrentMonthOnly={true}
+                                showPrecedingEmptyRowForMonth={true}
+                                showSucceedingEmptyRowForMonth={true}
+                                emptyRowHeight={60}
                             />
                         </Col>
                     </Row>

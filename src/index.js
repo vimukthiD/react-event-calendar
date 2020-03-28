@@ -194,6 +194,18 @@ class EventCalendar extends React.Component {
       return daysWithEvents.map((day, index) => {
         let columns = [];
 
+        if (index ==0){
+          for (let i = 0;  this.props.showPrecedingEmptyRowForMonth && i < 7; i++) {
+            columns.push(<CalendarDay
+              day={null}
+              events={null}
+              isToday={false}
+              onClick={null}
+              emptyRowHeight={this.props.emptyRowHeight}
+            />);
+          }
+        }
+
         for (let i = 0; !isFirstRowAdjusted && !this.calendar.siblingMonths && i < day.weekDay; i++) {
           columns.push(<CalendarDay
             day={null}
@@ -225,6 +237,15 @@ class EventCalendar extends React.Component {
               onClick={null}
             />);
           }
+          for (let i = 0; this.props.showSucceedingEmptyRowForMonth && i < 7; i++) {
+            columns.push(<CalendarDay
+              day={null}
+              events={null}
+              isToday={false}
+              onClick={null}
+              emptyRowHeight={this.props.emptyRowHeight}
+            />);
+          }
         }
 
         return (
@@ -254,7 +275,10 @@ EventCalendar.propTypes = {
     onDayClick: React.PropTypes.func,
     wrapTitle: React.PropTypes.bool,
     year: React.PropTypes.number.isRequired,
-    showCurrentMonthOnly: React.PropTypes.bool
+    showCurrentMonthOnly: React.PropTypes.bool,
+    showPrecedingEmptyRowForMonth: React.PropTypes.bool,
+    showSucceedingEmptyRowForMonth: React.PropTypes.bool,
+    emptyRowHeight: React.PropTypes.num
 
 };
 
@@ -272,6 +296,8 @@ EventCalendar.defaultProps = {
     wrapTitle: true,
     maxEventSlots: 10,
     showCurrentMonthOnly: false,
+    showPrecedingEmptyRowForMonth: false,
+    showSucceedingEmptyRowForMonth: false,
 };
 
 export default EventCalendar;

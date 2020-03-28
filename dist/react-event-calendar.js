@@ -298,7 +298,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return daysWithEvents.map(function (day, index) {
 	                var columns = [];
 	
-	                for (var i = 0; !isFirstRowAdjusted && !_this5.calendar.siblingMonths && i < day.weekDay; i++) {
+	                if (index == 0) {
+	                    for (var i = 0; _this5.props.showPrecedingEmptyRowForMonth && i < 7; i++) {
+	                        columns.push(_react2.default.createElement(_CalendarDay2.default, {
+	                            day: null,
+	                            events: null,
+	                            isToday: false,
+	                            onClick: null,
+	                            emptyRowHeight: _this5.props.emptyRowHeight
+	                        }));
+	                    }
+	                }
+	
+	                for (var _i = 0; !isFirstRowAdjusted && !_this5.calendar.siblingMonths && _i < day.weekDay; _i++) {
 	                    columns.push(_react2.default.createElement(_CalendarDay2.default, {
 	                        day: null,
 	                        events: null,
@@ -321,12 +333,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }));
 	
 	                if (index >= daysWithEvents.length - 1) {
-	                    for (var _i = 6; !_this5.calendar.siblingMonths && day.weekDay < _i; _i--) {
+	                    for (var _i2 = 6; !_this5.calendar.siblingMonths && day.weekDay < _i2; _i2--) {
 	                        columns.push(_react2.default.createElement(_CalendarDay2.default, {
 	                            day: null,
 	                            events: null,
 	                            isToday: false,
 	                            onClick: null
+	                        }));
+	                    }
+	                    for (var _i3 = 0; _this5.props.showSucceedingEmptyRowForMonth && _i3 < 7; _i3++) {
+	                        columns.push(_react2.default.createElement(_CalendarDay2.default, {
+	                            day: null,
+	                            events: null,
+	                            isToday: false,
+	                            onClick: null,
+	                            emptyRowHeight: _this5.props.emptyRowHeight
 	                        }));
 	                    }
 	                }
@@ -360,7 +381,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onDayClick: _react2.default.PropTypes.func,
 	    wrapTitle: _react2.default.PropTypes.bool,
 	    year: _react2.default.PropTypes.number.isRequired,
-	    showCurrentMonthOnly: _react2.default.PropTypes.bool
+	    showCurrentMonthOnly: _react2.default.PropTypes.bool,
+	    showPrecedingEmptyRowForMonth: _react2.default.PropTypes.bool,
+	    showSucceedingEmptyRowForMonth: _react2.default.PropTypes.bool,
+	    emptyRowHeight: _react2.default.PropTypes.num
 	
 	};
 	
@@ -369,7 +393,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    events: [],
 	    wrapTitle: true,
 	    maxEventSlots: 10,
-	    showCurrentMonthOnly: false
+	    showCurrentMonthOnly: false,
+	    showPrecedingEmptyRowForMonth: false,
+	    showSucceedingEmptyRowForMonth: false
 	};
 	
 	exports.default = EventCalendar;
@@ -726,7 +752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _react2.default.createElement(
 	          'div',
 	          {
-	            className: dayClasses },
+	            className: dayClasses, style: { minHeight: this.props.emptyRowHeight } },
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'inner-grid' },
@@ -771,7 +797,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  day: _react2.default.PropTypes.object.isRequired,
 	  isToday: _react2.default.PropTypes.bool,
 	  events: _react2.default.PropTypes.array,
-	  onClick: _react2.default.PropTypes.func
+	  onClick: _react2.default.PropTypes.func,
+	  emptyRowHeight: _react2.default.PropTypes.num
 	};
 	
 	CalendarDay.defaultProps = {
