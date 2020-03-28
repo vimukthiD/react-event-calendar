@@ -4,25 +4,43 @@ import classnames from 'classnames';
 export default class CalendarDay extends React.Component {
     render () {
         const { day, isToday, events, onClick } = this.props;
-        const dayClasses = classnames({
+        if (!day){
+          const dayClasses = classnames({
+            'flexColumn': true,
+            'day': true,
+            'inactive': true,
+            'today': false,
+          });
+          return (
+            <div
+              className={dayClasses}>
+              <div className="inner-grid">
+                <div className="date">
+                </div>
+              </div>
+            </div>
+          )
+        } else {
+          const dayClasses = classnames({
             'flexColumn': true,
             'day': true,
             'inactive': day.siblingMonth,
             'today': isToday,
-        });
+          });
 
-        return (
-            <div 
-                onClick={onClick.bind(null, this, day)}
-                className={dayClasses}>
-                <div className="inner-grid">
-                    <div className="date">
-                        {day.day}
-                    </div>
-                    {events}
+          return (
+            <div
+              onClick={onClick.bind(null, this, day)}
+              className={dayClasses}>
+              <div className="inner-grid">
+                <div className="date">
+                  {day.day}
                 </div>
+                {events}
+              </div>
             </div>
-        );
+          );
+        }
     }
 }
 

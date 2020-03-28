@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -68,11 +68,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _calendarBase = __webpack_require__(2);
 	
-	var _classnames = __webpack_require__(3);
-	
-	var _classnames2 = _interopRequireDefault(_classnames);
-	
-	var _CalendarDay = __webpack_require__(4);
+	var _CalendarDay = __webpack_require__(3);
 	
 	var _CalendarDay2 = _interopRequireDefault(_CalendarDay);
 	
@@ -83,6 +79,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _CalendarTitle = __webpack_require__(6);
 	
 	var _CalendarTitle2 = _interopRequireDefault(_CalendarTitle);
+	
+	var _classnames = __webpack_require__(4);
+	
+	var _classnames2 = _interopRequireDefault(_classnames);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -98,7 +98,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function EventCalendar(props) {
 	        _classCallCheck(this, EventCalendar);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventCalendar).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (EventCalendar.__proto__ || Object.getPrototypeOf(EventCalendar)).call(this, props));
 	
 	        _this._eventTargets = {};
 	
@@ -106,7 +106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            today: _this.getToday()
 	        };
 	
-	        _this.calendar = new _calendarBase.Calendar({ siblingMonths: true });
+	        _this.calendar = new _calendarBase.Calendar({ siblingMonths: !_this.props.showCurrentMonthOnly });
 	
 	        // Bind methods
 	        _this.getCalendarDays = _this.getCalendarDays.bind(_this);
@@ -132,7 +132,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function getCalendarDays() {
 	            var _this2 = this;
 	
-	            return this.calendar.getCalendar(this.props.year, this.props.month).map(function (day) {
+	            return this.calendar.getCalendar(this.props.year, this.props.month).filter(function (value) {
+	                return _this2.calendar.siblingMonths || value;
+	            }).map(function (day) {
 	                day.eventSlots = Array(_this2.props.maxEventSlots).fill(false);
 	                return day;
 	            });
@@ -179,7 +181,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var _this3 = this;
 	
 	            // Get all the days in this months calendar view
-	            // Sibling Months included
 	            var days = this.getCalendarDays();
 	
 	            // Set Range Limits on calendar
@@ -292,17 +293,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function renderCalendarDays() {
 	            var _this5 = this;
 	
-	            return this.getDaysWithEvents().map(function (day, index) {
+	            var isFirstRowAdjusted = false;
+	            var daysWithEvents = this.getDaysWithEvents();
+	            return daysWithEvents.map(function (day, index) {
+	                var columns = [];
+	
+	                for (var i = 0; !isFirstRowAdjusted && !_this5.calendar.siblingMonths && i < day.weekDay; i++) {
+	                    columns.push(_react2.default.createElement(_CalendarDay2.default, {
+	                        day: null,
+	                        events: null,
+	                        isToday: false,
+	                        onClick: null
+	                    }));
+	                }
+	
+	                if (!isFirstRowAdjusted) {
+	                    isFirstRowAdjusted = true;
+	                }
 	                var isToday = _calendarBase.Calendar.interval(day, _this5.state.today) === 1;
 	                var events = _this5.renderEvents(day);
-	
-	                return _react2.default.createElement(_CalendarDay2.default, {
+	                columns.push(_react2.default.createElement(_CalendarDay2.default, {
 	                    key: 'day_' + _this5.getSerializedDay(day),
 	                    day: day,
 	                    events: events,
 	                    isToday: isToday,
 	                    onClick: _this5.props.onDayClick
-	                });
+	                }));
+	
+	                if (index >= daysWithEvents.length - 1) {
+	                    for (var _i = 6; !_this5.calendar.siblingMonths && day.weekDay < _i; _i--) {
+	                        columns.push(_react2.default.createElement(_CalendarDay2.default, {
+	                            day: null,
+	                            events: null,
+	                            isToday: false,
+	                            onClick: null
+	                        }));
+	                    }
+	                }
+	
+	                return columns;
 	            });
 	        }
 	    }, {
@@ -330,7 +359,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onEventMouseOver: _react2.default.PropTypes.func,
 	    onDayClick: _react2.default.PropTypes.func,
 	    wrapTitle: _react2.default.PropTypes.bool,
-	    year: _react2.default.PropTypes.number.isRequired
+	    year: _react2.default.PropTypes.number.isRequired,
+	    showCurrentMonthOnly: _react2.default.PropTypes.bool
 	
 	};
 	
@@ -338,20 +368,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    daysOfTheWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 	    events: [],
 	    wrapTitle: true,
-	    maxEventSlots: 10
+	    maxEventSlots: 10,
+	    showCurrentMonthOnly: false
 	};
 	
 	exports.default = EventCalendar;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * Calendar constructor
@@ -639,12 +670,120 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = { Calendar: Calendar };
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _classnames = __webpack_require__(4);
+	
+	var _classnames2 = _interopRequireDefault(_classnames);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var CalendarDay = function (_React$Component) {
+	  _inherits(CalendarDay, _React$Component);
+	
+	  function CalendarDay() {
+	    _classCallCheck(this, CalendarDay);
+	
+	    return _possibleConstructorReturn(this, (CalendarDay.__proto__ || Object.getPrototypeOf(CalendarDay)).apply(this, arguments));
+	  }
+	
+	  _createClass(CalendarDay, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props,
+	          day = _props.day,
+	          isToday = _props.isToday,
+	          events = _props.events,
+	          onClick = _props.onClick;
+	
+	      if (!day) {
+	        var dayClasses = (0, _classnames2.default)({
+	          'flexColumn': true,
+	          'day': true,
+	          'inactive': true,
+	          'today': false
+	        });
+	        return _react2.default.createElement(
+	          'div',
+	          {
+	            className: dayClasses },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'inner-grid' },
+	            _react2.default.createElement('div', { className: 'date' })
+	          )
+	        );
+	      } else {
+	        var _dayClasses = (0, _classnames2.default)({
+	          'flexColumn': true,
+	          'day': true,
+	          'inactive': day.siblingMonth,
+	          'today': isToday
+	        });
+	
+	        return _react2.default.createElement(
+	          'div',
+	          {
+	            onClick: onClick.bind(null, this, day),
+	            className: _dayClasses },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'inner-grid' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'date' },
+	              day.day
+	            ),
+	            events
+	          )
+	        );
+	      }
+	    }
+	  }]);
+	
+	  return CalendarDay;
+	}(_react2.default.Component);
+	
+	exports.default = CalendarDay;
+	
+	
+	CalendarDay.propTypes = {
+	  day: _react2.default.PropTypes.object.isRequired,
+	  isToday: _react2.default.PropTypes.bool,
+	  events: _react2.default.PropTypes.array,
+	  onClick: _react2.default.PropTypes.func
+	};
+	
+	CalendarDay.defaultProps = {
+	  onClick: function onClick() {}
+	};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	  Copyright (c) 2016 Jed Watson.
+	  Copyright (c) 2017 Jed Watson.
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
@@ -666,8 +805,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				if (argType === 'string' || argType === 'number') {
 					classes.push(arg);
-				} else if (Array.isArray(arg)) {
-					classes.push(classNames.apply(null, arg));
+				} else if (Array.isArray(arg) && arg.length) {
+					var inner = classNames.apply(null, arg);
+					if (inner) {
+						classes.push(inner);
+					}
 				} else if (argType === 'object') {
 					for (var key in arg) {
 						if (hasOwn.call(arg, key) && arg[key]) {
@@ -681,6 +823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	
 		if (typeof module !== 'undefined' && module.exports) {
+			classNames.default = classNames;
 			module.exports = classNames;
 		} else if (true) {
 			// register as 'classnames', consistent with npm package name
@@ -693,100 +836,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}());
 
 
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _classnames = __webpack_require__(3);
-	
-	var _classnames2 = _interopRequireDefault(_classnames);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var CalendarDay = function (_React$Component) {
-	    _inherits(CalendarDay, _React$Component);
-	
-	    function CalendarDay() {
-	        _classCallCheck(this, CalendarDay);
-	
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarDay).apply(this, arguments));
-	    }
-	
-	    _createClass(CalendarDay, [{
-	        key: 'render',
-	        value: function render() {
-	            var _props = this.props;
-	            var day = _props.day;
-	            var isToday = _props.isToday;
-	            var events = _props.events;
-	            var onClick = _props.onClick;
-	
-	            var dayClasses = (0, _classnames2.default)({
-	                'flexColumn': true,
-	                'day': true,
-	                'inactive': day.siblingMonth,
-	                'today': isToday
-	            });
-	
-	            return _react2.default.createElement(
-	                'div',
-	                {
-	                    onClick: onClick.bind(null, this, day),
-	                    className: dayClasses },
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'inner-grid' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'date' },
-	                        day.day
-	                    ),
-	                    events
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return CalendarDay;
-	}(_react2.default.Component);
-	
-	exports.default = CalendarDay;
-	
-	
-	CalendarDay.propTypes = {
-	    day: _react2.default.PropTypes.object.isRequired,
-	    isToday: _react2.default.PropTypes.bool,
-	    events: _react2.default.PropTypes.array,
-	    onClick: _react2.default.PropTypes.func
-	};
-	
-	CalendarDay.defaultProps = {
-	    onClick: function onClick() {}
-	};
-	
-	exports.default = CalendarDay;
-
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -800,7 +852,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(3);
+	var _classnames = __webpack_require__(4);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -820,7 +872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function CalendarEvent(props) {
 	        _classCallCheck(this, CalendarEvent);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarEvent).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (CalendarEvent.__proto__ || Object.getPrototypeOf(CalendarEvent)).call(this, props));
 	
 	        _this.sharedArguments = [null, _this, _this.props.eventData, _this.props.day];
 	        // Bind methods
@@ -829,6 +881,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    _createClass(CalendarEvent, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(nextProps) {
+	            this.sharedArguments = [null, this, nextProps.eventData, nextProps.day];
+	        }
+	    }, {
 	        key: 'handleClick',
 	        value: function handleClick(e) {
 	            var _props;
@@ -841,7 +898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function render() {
 	            var _props$onMouseOut, _props$onMouseOver;
 	
-	            // Return a placeholder element if there is no event data
+	            // Return a placeholder element if there is no event data 
 	            if (!this.props.eventData) {
 	                return _react2.default.createElement('div', { className: 'event-slot' });
 	            }
@@ -893,9 +950,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.default = CalendarEvent;
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
@@ -925,7 +982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.default = CalendarTitle;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;

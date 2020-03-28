@@ -1,10 +1,10 @@
 import React from 'react';
 import {Calendar} from 'calendar-base';
-import classnames from 'classnames';
 
 import CalendarDay from './components/CalendarDay';
 import CalendarEvent from './components/CalendarEvent';
 import CalendarTitle from './components/CalendarTitle';
+import classnames from 'classnames';
 
 class EventCalendar extends React.Component {
 
@@ -82,7 +82,6 @@ class EventCalendar extends React.Component {
 
     getDaysWithEvents() {
         // Get all the days in this months calendar view
-        // Sibling Months included
         const days = this.getCalendarDays();
 
         // Set Range Limits on calendar
@@ -190,20 +189,48 @@ class EventCalendar extends React.Component {
     }
 
     renderCalendarDays() {
-        return this.getDaysWithEvents().map((day, index) => {
-            const isToday = Calendar.interval(day, this.state.today) === 1;
-            const events = this.renderEvents(day);
+      let isFirstRowAdjusted = false;
+      let daysWithEvents = this.getDaysWithEvents();
+      return daysWithEvents.map((day, index) => {
+        let columns = [];
 
-            return (
-                <CalendarDay
-                    key={'day_'+this.getSerializedDay(day)}
-                    day={day}
-                    events={events}
-                    isToday={isToday}
-                    onClick={this.props.onDayClick}
-                    />
-                );
-        });
+        for (let i = 0; !isFirstRowAdjusted && !this.calendar.siblingMonths && i < day.weekDay; i++) {
+          columns.push(<CalendarDay
+            day={null}
+            events={null}
+            isToday={false}
+            onClick={null}
+          />);
+        }
+
+        if (!isFirstRowAdjusted) {
+          isFirstRowAdjusted = true;
+        }
+        const isToday = Calendar.interval(day, this.state.today) === 1;
+        const events = this.renderEvents(day);
+        columns.push(<CalendarDay
+          key={'day_' + this.getSerializedDay(day)}
+          day={day}
+          events={events}
+          isToday={isToday}
+          onClick={this.props.onDayClick}
+        />);
+
+        if (index >= daysWithEvents.length -1 ){
+          for (let i = 6; !this.calendar.siblingMonths && day.weekDay < i; i--) {
+            columns.push(<CalendarDay
+              day={null}
+              events={null}
+              isToday={false}
+              onClick={null}
+            />);
+          }
+        }
+
+        return (
+          columns
+        );
+      });
     }
 
     render() {
